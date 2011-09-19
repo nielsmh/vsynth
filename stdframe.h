@@ -13,6 +13,7 @@ define a new frame format if a stdframe format is inadequate.
 HEADER_START
 
 
+/// Pixel formats supported by the stdframe type
 enum StdframePixelFormat {
 	// one channel, uint8_t pixels, gamma corrected, stored in plane 0, other planes unused
 	STDPIXFMT_MONO8,
@@ -71,14 +72,20 @@ enum StdframePixelFormat {
 };
 
 
+/// Type of stdframe objects
 typedef struct StandardFrame *StandardFrame;
 
+/// Vtable for stdframe objects
 struct StandardFrameVirtual {
 	struct FrameVirtual base;
 
+	/// Crop the frame without reallocating or blitting
 	void (VSYNTH_METHOD *crop)(StandardFrame frame, size_t left, size_t top, size_t width, size_t height);
 };
 
+/// Standard frame type useful for most common video processing
+///
+/// The StandardFrame type describes common mono, RGB and YCrCb formats.
 struct StandardFrame {
 	struct Frame base;
 
@@ -87,17 +94,27 @@ struct StandardFrame {
 	/// Height of frame in pixels
 	size_t height;
 
+	/// Distance between start of scanlines for each plane
 	ptrdiff_t stride[4];
+	/// Pointers to each plane
 	void *data[4];
 
+	/// Pixel format of the frame
 	enum StdframePixelFormat pixfmt;
 
+	/// Internal: Pointer to raw memory allocation for the frame
 	void *data_baseptr;
+	/// Internal: Number of bytes allocated for the frame
 	size_t data_rawsize;
 };
 
+/// The global vtable for StandardFrame objects
+///
+/// Every Frame that is a StandardFrame has its methods member pointing to
+/// this vtable.
 extern struct StandardFrameVirtual stdframe_vtable;
 
+/// Description of a supported stdframe format for use in filter activation
 struct StandardFrameTypeDescription {
 	/// Base frame type description, must be initialised with a pointer to stdframe_vtable
 	struct FrameTypeDescription base;
@@ -150,7 +167,9 @@ struct StandardFrameTypeDescription {
 };
 
 
+/// Allocate a new stdframe with given properties
 VSYNTH_API(StandardFrame) Stdframe_New(enum StdframePixelFormat pixfmt, size_t width, size_t height);
+/// Check if a Frame is a stdframe, and return a StandardFrame pointer if it is
 VSYNTH_API(StandardFrame) Stdframe_Get(Frame frame);
 
 
