@@ -50,6 +50,7 @@ Things that need to be decided/discussed:
  * What to do about interlaced video. Have StandardFrame support interlaced
    video or have a new frame type for interlaced video? Does it affect the core
    in any way?
+ * A logging framework could be useful for many things.
 
 Work that needs doing:
  * Developing some tools for interactive testing.
