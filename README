@@ -56,4 +56,7 @@ Work that needs doing:
  * Other basic filters: Cropping, trimming, concatenation, resampling,
    colour format conversion.
  * Formal tests for the core and standard extensions.
+ * Develop a C++ wrapper (ideally header-only) for the core API.
+ * The current implementations are largely written with minimal amount of
+   effort and can be improved upon.
 
