@@ -69,6 +69,7 @@ struct StandardFrame {
 	enum StdframePixelFormat pixfmt;
 
 	void *data_baseptr;
+	size_t data_rawsize;
 };
 typedef struct StandardFrame *StandardFrame;
 

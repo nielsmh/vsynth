@@ -2,6 +2,7 @@
 
 #include "stdframe.h"
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 
 static void VSYNTH_METHOD Stdframe_destroy(Frame frame)
@@ -16,10 +17,18 @@ static void VSYNTH_METHOD Stdframe_destroy(Frame frame)
 static Frame VSYNTH_METHOD Stdframe_clone(Frame frame)
 {
 	StandardFrame sf = Stdframe_Get(frame);
+	StandardFrame result = NULL;
+
 	assert(sf != NULL);
 
-	// todo
-	return NULL;
+	result = Stdframe_New(sf->pixfmt, frame->width, frame->height);
+	if (result == NULL)
+		return NULL;
+	// fixme? check whether new frame has sama datasize as old?
+
+	memcpy(result->data_baseptr, sf->data_baseptr, sf->data_rawsize);
+	
+	return (Frame)result;
 }
 
 struct StandardFrameVirtual stdframe_vtable = {
@@ -136,6 +145,7 @@ VSYNTH_API(StandardFrame) Stdframe_New(enum StdframePixelFormat pixfmt, size_t w
 		memreq += stride[i] * planeheight[i];
 	// allocate
 	frame->data_baseptr = malloc(memreq);
+	frame->data_rawsize = memreq;
 	// store strides
 	for (i = 0; i < 4; i++)
 		frame->stride[i] = stride[i];
