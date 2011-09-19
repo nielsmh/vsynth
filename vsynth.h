@@ -63,10 +63,6 @@ struct Frame {
 	/// A frame's timestamp is the first moment in time the frame is to be
 	/// displayed.
 	Timestamp timestamp;
-	/// Width of frame in pixels
-	size_t width;
-	/// Height of frame in pixels
-	size_t height;
 };
 
 /// Structure for describing supported frame types during filter activation

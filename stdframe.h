@@ -82,6 +82,11 @@ struct StandardFrameVirtual {
 struct StandardFrame {
 	struct Frame base;
 
+	/// Width of frame in pixels
+	size_t width;
+	/// Height of frame in pixels
+	size_t height;
+
 	size_t stride[4];
 	void *data[4];
 

@@ -148,7 +148,7 @@ static Frame VSYNTH_METHOD Stdframe_clone(Frame frame)
 
 	assert(sf != NULL);
 
-	result = Stdframe_New(sf->pixfmt, frame->width, frame->height);
+	result = Stdframe_New(sf->pixfmt, sf->width, sf->height);
 	if (result == NULL)
 		return NULL;
 	// fixme? check whether new frame has sama datasize as old?
@@ -166,13 +166,13 @@ static void VSYNTH_METHOD Stdframe_crop(StandardFrame frame, size_t left, size_t
 	assert(pixelsize > 0);
 	assert(planes > 0);
 
-	if (left + width > frame->base.width)
+	if (left + width > frame->width)
 		return;
-	if (top + height > frame->base.height)
+	if (top + height > frame->height)
 		return;
 
-	frame->base.width = width;
-	frame->base.height = height;
+	frame->width = width;
+	frame->height = height;
 
 	for (i = 0; i < planes; i++)
 	{
@@ -290,8 +290,8 @@ VSYNTH_API(StandardFrame) Stdframe_New(enum StdframePixelFormat pixfmt, size_t w
 
 	frame = (StandardFrame)malloc(sizeof(struct StandardFrame));
 	frame->pixfmt = pixfmt;
-	frame->base.width = width;
-	frame->base.height = height;
+	frame->width = width;
+	frame->height = height;
 
 	// calculate memory needed
 	for (i = 0; i < 4; i++)
