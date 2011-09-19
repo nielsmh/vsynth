@@ -1,5 +1,15 @@
 #include "vsynth.h"
 
+/*
+
+This header defines a series of standard frame formats useful for most common
+video processing tasks. It is not meant to be completely exhaustive.
+
+Filters should attempt to do their work using stdframe formats, and only
+define a new frame format if a stdframe format is inadequate.
+
+*/
+
 HEADER_START
 
 
@@ -9,12 +19,16 @@ enum StdframePixelFormat {
 	// one channel, uint16_t pixels, linear gamma, stored in plane 0, other planes unused
 	STDPIXFMT_MONO16,
 	// XRGB, packed uint8_t channels, gamma corrected, stored in plane 0, other planes unused
+	// pixels are 32 bit wide, stored as: <unused><red><green><blue>
 	STDPIXFMT_XRGB8,
 	// ARGB, packed uint8_t channels, gamma corrected, stored in plane 0, other planes unused
+	// pixels are 32 bit wide, stored as: <alpha><red><green><blue>
 	STDPIXFMT_ARGB8,
 	// XRGB, packed uint16_t channels, linear gamma, stored in plane 0, other planes unused
+	// pixels are 64 bit wide, stored as: <unused><red><green><blue>
 	STDPIXFMT_XRGB16,
 	// ARGB, packed uint16_t channels, linear gamma, stored in plane 0, other planes unused
+	// pixels are 64 bit wide, stored as: <alpha><red><green><blue>
 	STDPIXFMT_ARGB16,
 	// YCrCb 4:4:4, uint8_t pixels, gamma corrected
 	// plane 0 is Y, full resolution
