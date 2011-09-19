@@ -69,6 +69,20 @@ struct Frame {
 	size_t height;
 };
 
+/// Structure for describing supported frame types during filter activation
+///
+/// Frame types may extend this structure with other relevant fields to describe
+/// further constraints.
+struct FrameTypeDescription {
+	/// Pointer to the vtable of the frame type, to distinguish the frame type
+	struct FrameVirtual *frame_type;
+	/// Set by the callee during filter activation, telling whether it supports the format
+	///
+	/// The filter being activated sets this to zero if it does not supporte the format
+	/// or to non-zero if it does support the format.
+	int out_supported;
+};
+
 
 /// A character string or blob with memory managed by Vsynth
 struct String {
@@ -172,7 +186,16 @@ struct FilterVirtual {
 	/// May return NULL if the current property settings are invalid. In that
 	/// case the error pointer must be set to a String describing the problem.
 	/// The error string is owned by the caller.
-	ActiveFilter (VSYNTH_METHOD *activate)(Filter filter, String *error);
+	///
+	/// The caller must pass an array of pointers to FrameTypeDescription
+	/// structures, terminated by a NULL pointer. This array describes the
+	/// frame types the activator can accept and any further constrains on
+	/// them. The activatee checks each frame type description and sets the
+	/// out_supported flag on each depending on whether it can support
+	/// outputting that frame type. If it cannot support any of the frame
+	/// types it must fail. An active filter should only deliver frame types
+	/// it promised during activation.
+	ActiveFilter (VSYNTH_METHOD *activate)(Filter filter, String *error, struct FrameTypeDescription **frametypes);
 
 	/// Enumerate all properties the filter has through the callback function
 	void (VSYNTH_METHOD *enum_properties)(EnumPropertiesFunc callback, void *userdata);

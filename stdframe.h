@@ -66,6 +66,8 @@ enum StdframePixelFormat {
 	STDPIXFMT_YCrCb16_420,
 	// same as YCrCb16_420, but plane 3 is alpha at full resolution
 	STDPIXFMT_YCrCbA16_420,
+	// sentinel marker counting the number of stdpixfmts
+	STDPIXFMT_MAX
 };
 
 
@@ -87,6 +89,59 @@ struct StandardFrame {
 
 	void *data_baseptr;
 	size_t data_rawsize;
+};
+
+extern struct StandardFrameVirtual stdframe_vtable;
+
+struct StandardFrameTypeDescription {
+	/// Base frame type description, must be initialised with a pointer to stdframe_vtable
+	struct FrameTypeDescription base;
+	/// Flag whether mid-stream resolution changes may occur
+	///
+	/// If this is set to non-zero on input, the activated filter should set
+	/// it to zero if it can promise to never change resolution mid-stream.
+	int allow_resolution_change;
+	/// Flag whether mid-stream pixfmt changes may occur
+	///
+	/// If this is set to non-zero on input, the activated filter should set
+	/// it to zero if it can promise to never change pixfmt mid-stream.
+	int allow_pixfmt_change;
+	/// Minimum width of picture required
+	///
+	/// On output, should be changed to indicate any promises stronger than
+	/// the requirement.
+	size_t minwidth;
+	/// Maximum width of picture allowed
+	///
+	/// On output, should be changed to indicate any promises stronger than
+	/// the requirement.
+	size_t maxwidth;
+	/// Minimum height of picture required
+	///
+	/// On output, should be changed to indicate any promises stronger than
+	/// the requirement.
+	size_t minheight;
+	/// Maximum height of picture allowed
+	///
+	/// On output, should be changed to indicate any promises stronger than
+	/// the requirement.
+	size_t maxheight;
+	/// Modulo requirement for picture width
+	///
+	/// 0 means no constraints on width. Non-zero means that frames must
+	/// always have a width evenly divisible by this number.
+	unsigned short width_modulo;
+	/// Modulo requirement for picture height
+	///
+	/// 0 means no constraints on width. Non-zero means that frames must
+	/// always have a height evenly divisible by this number.
+	unsigned short height_modulo;
+	/// Pointer to array of supported pixfmts
+	///
+	/// May be NULL if all pixfmts are supported.
+	///
+	/// Array must be terminated by a STDPIXFMT_MAX value.
+	enum StdframePixelFormat *pixfmts;
 };
 
 
