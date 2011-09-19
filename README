@@ -47,6 +47,9 @@ Things that need to be decided/discussed:
    or more should be supported. The extent of methods available for it.
  * Extent of standard filters in the project.
  * Some standard frame caching mechanism is desirable.
+ * What to do about interlaced video. Have StandardFrame support interlaced
+   video or have a new frame type for interlaced video? Does it affect the core
+   in any way?
 
 Work that needs doing:
  * Developing some tools for interactive testing.
