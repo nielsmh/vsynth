@@ -54,11 +54,14 @@ enum StdframePixelFormat {
 	STDPIXFMT_YCrCbA16_420,
 };
 
+
+typedef struct StandardFrame *StandardFrame;
+
 struct StandardFrameVirtual {
 	struct FrameVirtual base;
-};
 
-extern struct StandardFrameVirtual stdframe_vtable;
+	void (VSYNTH_METHOD *crop)(StandardFrame frame, size_t left, size_t top, size_t width, size_t height);
+};
 
 struct StandardFrame {
 	struct Frame base;
@@ -71,7 +74,6 @@ struct StandardFrame {
 	void *data_baseptr;
 	size_t data_rawsize;
 };
-typedef struct StandardFrame *StandardFrame;
 
 
 VSYNTH_API(StandardFrame) Stdframe_New(enum StdframePixelFormat pixfmt, size_t width, size_t height);
