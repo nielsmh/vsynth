@@ -29,6 +29,11 @@ Goals:
  * API specified in plain C. It should be possible to use and extend Vsynth
    using almost any language, instead of being limited to C++.
  * No dependency on external libraries from the core. It must be portable.
+ * All code must be documented. Public interfaces must have good documentation
+   so they can be programmed against reliably, and any complex routines must
+   have their function and algorithm documented. All routines must at the very
+   least exist in a C or C++ implementation with no inline assembly, a routine
+   must not be implemented in assembly only.
 
 There is no particular license attached to the code yet, but an MIT-style
 permissive license is anticipated.
@@ -41,6 +46,7 @@ Things that need to be decided/discussed:
  * The StandardFrame type, whether the pixel formats supported now are enough
    or more should be supported. The extent of methods available for it.
  * Extent of standard filters in the project.
+ * Some standard frame caching mechanism is desirable.
 
 Work that needs doing:
  * Developing some tools for interactive testing.
