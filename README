@@ -1,1 +1,53 @@
 Vsynth is a video processing system.
+
+The goal for Vsynth is to become a replacement for the old Avisynth system.
+Vsynth was started because Avisynth is starting to show its age and reveals
+several flaws that makes it pointless to continue developing.
+
+Goals:
+ * Have a minimal core. This basic core is already specified and implemented
+   in the vsynth.h/vsynth.c files.
+ * Not be bound up on any specific media frameworks. Avisynth heavily builds
+   on Microsoft's Video for Windows framework, which causes many inherent
+   limitations.
+ * Separate scripting from the core functionality. Being able to specify
+   processing graphs through a scripting language should be treated as an
+   add-on to the minimal core.
+ * No built-in filters per se. All parts of the system that are not the core
+   must be replaceable. However, a base package of filters for the simplest
+   operations should still be available.
+ * Extensible frame format/colorspace support. A "standard frame" type is
+   supplied, which should cover most common video processing tasks, but it
+   is possible to define other frame types, although a filter must know about
+   the details of a specific frame type to be able to do more than the simplest
+   operations on it.
+ * Variable frame rate support. Each frame has a timestamp attached, rather
+   than simply a frame number. Currently, there is no concept of frame rate.
+ * No audio support. This is not set in stone, and is a big departure from
+   Avisynth. Audio adds significant complexity, which is not desirable at
+   this time.
+ * API specified in plain C. It should be possible to use and extend Vsynth
+   using almost any language, instead of being limited to C++.
+ * No dependency on external libraries from the core. It must be portable.
+
+There is no particular license attached to the code yet, but an MIT-style
+permissive license is anticipated.
+
+At this stage of the project, any and all inputs are welcome.
+
+Things that need to be decided/discussed:
+ * Scripting language. Use an existing one (Lua?) or design a new one.
+ * Whether to actually have audio support or not.
+ * The StandardFrame type, whether the pixel formats supported now are enough
+   or more should be supported. The extent of methods available for it.
+ * Extent of standard filters in the project.
+
+Work that needs doing:
+ * Developing some tools for interactive testing.
+ * Some kind of compatibility interface for Avisynth. Ability to load filters
+   from Avisynth and/or ability to load Vsynth into Avisynth.
+ * Source filter. FFmpegSource?
+ * Other basic filters: Cropping, trimming, concatenation, resampling,
+   colour format conversion.
+ * Formal tests for the core and standard extensions.
+
