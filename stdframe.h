@@ -87,7 +87,7 @@ struct StandardFrame {
 	/// Height of frame in pixels
 	size_t height;
 
-	size_t stride[4];
+	ptrdiff_t stride[4];
 	void *data[4];
 
 	enum StdframePixelFormat pixfmt;
