@@ -5,7 +5,7 @@
 #include "vsynth.h"
 
 
-VSYNTH_API(String) AllocString(size_t len)
+__inline VSYNTH_API(String) AllocString(size_t len)
 {
 	String result = (String)malloc(sizeof(struct String));
 	result->len = len;
@@ -20,12 +20,12 @@ VSYNTH_API(String) AllocString(size_t len)
 	return result;
 }
 
-VSYNTH_API(String) MakeString(const char *str)
+__inline VSYNTH_API(String) MakeString(const char *str)
 {
 	return MakeStringN(str, strlen(str));
 }
 
-VSYNTH_API(String) MakeStringN(const char *str, size_t len)
+__inline VSYNTH_API(String) MakeStringN(const char *str, size_t len)
 {
 	String result = AllocString(len);
 	if (len > 0)
@@ -35,12 +35,12 @@ VSYNTH_API(String) MakeStringN(const char *str, size_t len)
 	return result;
 }
 
-VSYNTH_API(String) CopyString(const String str)
+__inline VSYNTH_API(String) CopyString(const String str)
 {
 	return MakeStringN(str->str, str->len);
 }
 
-VSYNTH_API(void) FreeString(String str)
+__inline VSYNTH_API(void) FreeString(String str)
 {
 	free(str->str);
 	free(str);
