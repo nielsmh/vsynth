@@ -1,6 +1,6 @@
 #define VSYNTH_API(rettype) __declspec(dllexport) rettype __stdcall
 
-#include "stdframe.h"
+#include <vsynth/stdframe.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>

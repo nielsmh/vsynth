@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "vsynth.h"
+#include <vsynth/vsynth.h>
 
 
 __inline VSYNTH_API(String) AllocString(size_t len)

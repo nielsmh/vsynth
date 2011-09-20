@@ -1,4 +1,4 @@
-#include "vsynth.h"
+#include <vsynth/vsynth.h>
 
 /*
 
