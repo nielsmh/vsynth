@@ -10,9 +10,9 @@
 #endif
 
 
-extern INLINE VSYNTH_API(String) AllocString(size_t len)
+extern INLINE VSYNTH_API(Vs_String) Vs_AllocString(size_t len)
 {
-	String result = (String)malloc(sizeof(struct String));
+	Vs_String result = (Vs_String)malloc(sizeof(struct Vs_String));
 	result->len = len;
 	if (len > 0)
 	{
@@ -25,14 +25,14 @@ extern INLINE VSYNTH_API(String) AllocString(size_t len)
 	return result;
 }
 
-extern INLINE VSYNTH_API(String) MakeString(const char *str)
+extern INLINE VSYNTH_API(Vs_String) Vs_MakeString(const char *str)
 {
-	return MakeStringN(str, strlen(str));
+	return Vs_MakeStringN(str, strlen(str));
 }
 
-extern INLINE VSYNTH_API(String) MakeStringN(const char *str, size_t len)
+extern INLINE VSYNTH_API(Vs_String) Vs_MakeStringN(const char *str, size_t len)
 {
-	String result = AllocString(len);
+	Vs_String result = Vs_AllocString(len);
 	if (len > 0)
 	{
 		memcpy(result->str, str, len);
@@ -40,12 +40,12 @@ extern INLINE VSYNTH_API(String) MakeStringN(const char *str, size_t len)
 	return result;
 }
 
-extern INLINE VSYNTH_API(String) CopyString(const String str)
+extern INLINE VSYNTH_API(Vs_String) Vs_CopyString(const Vs_String str)
 {
-	return MakeStringN(str->str, str->len);
+	return Vs_MakeStringN(str->str, str->len);
 }
 
-extern INLINE VSYNTH_API(void) FreeString(String str)
+extern INLINE VSYNTH_API(void) Vs_FreeString(Vs_String str)
 {
 	free(str->str);
 	free(str);
@@ -54,12 +54,12 @@ extern INLINE VSYNTH_API(void) FreeString(String str)
 
 
 struct FactoryList {
-	struct FilterFactory *factory;
+	struct Vs_FilterFactory *factory;
 	struct FactoryList *next;
 };
 struct FactoryList *factory_list = NULL;
 
-VSYNTH_API(void) RegisterFilter(struct FilterFactory *factory)
+VSYNTH_API(void) Vs_RegisterFilter(struct Vs_FilterFactory *factory)
 {
 	struct FactoryList *cur;
 	struct FactoryList *new_head;
@@ -78,7 +78,7 @@ VSYNTH_API(void) RegisterFilter(struct FilterFactory *factory)
 	factory_list = new_head;
 }
 
-VSYNTH_API(struct FilterFactory *) FindFilter(const char *name)
+VSYNTH_API(struct Vs_FilterFactory *) Vs_FindFilter(const char *name)
 {
 	struct FactoryList *cur;
 	
@@ -90,7 +90,7 @@ VSYNTH_API(struct FilterFactory *) FindFilter(const char *name)
 	return NULL;
 }
 
-VSYNTH_API(void) EnumerateFilters(EnumFiltersFunc callback, void *userdata)
+VSYNTH_API(void) Vs_EnumerateFilters(Vs_EnumFiltersFunc callback, void *userdata)
 {
 	struct FactoryList *cur;
 	

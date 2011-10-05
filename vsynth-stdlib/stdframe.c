@@ -11,7 +11,7 @@
 #endif
 
 
-static INLINE size_t STDPIXFMT_pixelsize(enum StdframePixelFormat pixfmt)
+static INLINE size_t STDPIXFMT_pixelsize(enum Vs_StdframePixelFormat pixfmt)
 {
 	switch (pixfmt)
 	{
@@ -42,7 +42,7 @@ static INLINE size_t STDPIXFMT_pixelsize(enum StdframePixelFormat pixfmt)
 	}
 }
 
-static INLINE size_t STDPIXFMT_planecount(enum StdframePixelFormat pixfmt)
+static INLINE size_t STDPIXFMT_planecount(enum Vs_StdframePixelFormat pixfmt)
 {
 	switch (pixfmt)
 	{
@@ -72,7 +72,7 @@ static INLINE size_t STDPIXFMT_planecount(enum StdframePixelFormat pixfmt)
 	}
 }
 
-static INLINE size_t STDPIXFMT_planewidthscale(enum StdframePixelFormat pixfmt, size_t plane)
+static INLINE size_t STDPIXFMT_planewidthscale(enum Vs_StdframePixelFormat pixfmt, size_t plane)
 {
 	switch (pixfmt)
 	{
@@ -104,7 +104,7 @@ static INLINE size_t STDPIXFMT_planewidthscale(enum StdframePixelFormat pixfmt, 
 	}
 }
 
-static INLINE size_t STDPIXFMT_planeheightscale(enum StdframePixelFormat pixfmt, size_t plane)
+static INLINE size_t STDPIXFMT_planeheightscale(enum Vs_StdframePixelFormat pixfmt, size_t plane)
 {
 	switch (pixfmt)
 	{
@@ -137,33 +137,33 @@ static INLINE size_t STDPIXFMT_planeheightscale(enum StdframePixelFormat pixfmt,
 }
 
 
-VSYNTH_IMPLEMENT_METHOD(void, Stdframe_destroy)(Frame frame)
+VSYNTH_IMPLEMENT_METHOD(void, Stdframe_destroy)(Vs_Frame frame)
 {
-	StandardFrame sf = Stdframe_Get(frame);
+	Vs_StandardFrame sf = Vs_Stdframe_Get(frame);
 	assert(sf != NULL);
 
 	free(sf->data_baseptr);
 	free(sf);
 }
 
-VSYNTH_IMPLEMENT_METHOD(Frame, Stdframe_clone)(Frame frame)
+VSYNTH_IMPLEMENT_METHOD(Vs_Frame, Stdframe_clone)(Vs_Frame frame)
 {
-	StandardFrame sf = Stdframe_Get(frame);
-	StandardFrame result = NULL;
+	Vs_StandardFrame sf = Vs_Stdframe_Get(frame);
+	Vs_StandardFrame result = NULL;
 
 	assert(sf != NULL);
 
-	result = Stdframe_New(sf->pixfmt, sf->width, sf->height);
+	result = Vs_Stdframe_New(sf->pixfmt, sf->width, sf->height);
 	if (result == NULL)
 		return NULL;
 	// fixme? check whether new frame has sama datasize as old?
 
 	memcpy(result->data_baseptr, sf->data_baseptr, sf->data_rawsize);
 	
-	return (Frame)result;
+	return (Vs_Frame)result;
 }
 
-VSYNTH_IMPLEMENT_METHOD(void, Stdframe_crop)(StandardFrame frame, size_t left, size_t top, size_t width, size_t height)
+VSYNTH_IMPLEMENT_METHOD(void, Stdframe_crop)(Vs_StandardFrame frame, size_t left, size_t top, size_t width, size_t height)
 {
 	size_t pixelsize = STDPIXFMT_pixelsize(frame->pixfmt);
 	size_t planes = STDPIXFMT_planecount(frame->pixfmt);
@@ -188,7 +188,7 @@ VSYNTH_IMPLEMENT_METHOD(void, Stdframe_crop)(StandardFrame frame, size_t left, s
 	}
 }
 
-struct StandardFrameVirtual stdframe_vtable = {
+struct Vs_StandardFrameVirtual Vs_stdframe_vtable = {
 	{
 		Stdframe_destroy,
 		Stdframe_clone
@@ -197,9 +197,9 @@ struct StandardFrameVirtual stdframe_vtable = {
 };
 
 
-VSYNTH_API(StandardFrame) Stdframe_New(enum StdframePixelFormat pixfmt, size_t width, size_t height)
+VSYNTH_API(Vs_StandardFrame) Vs_Stdframe_New(enum Vs_StdframePixelFormat pixfmt, size_t width, size_t height)
 {
-	StandardFrame frame;
+	Vs_StandardFrame frame;
 
 	size_t memreq = 0;
 	ptrdiff_t stride[4] = {0};
@@ -293,7 +293,7 @@ VSYNTH_API(StandardFrame) Stdframe_New(enum StdframePixelFormat pixfmt, size_t w
 		return NULL;
 	}
 
-	frame = (StandardFrame)malloc(sizeof(struct StandardFrame));
+	frame = (Vs_StandardFrame)malloc(sizeof(struct Vs_StandardFrame));
 	frame->pixfmt = pixfmt;
 	frame->width = width;
 	frame->height = height;
@@ -315,11 +315,11 @@ VSYNTH_API(StandardFrame) Stdframe_New(enum StdframePixelFormat pixfmt, size_t w
 	return frame;
 }
 
-INLINE VSYNTH_API(StandardFrame) Stdframe_Get(Frame frame)
+INLINE VSYNTH_API(Vs_StandardFrame) Vs_Stdframe_Get(Vs_Frame frame)
 {
-	if (frame->methods == &stdframe_vtable.base)
+	if (frame->methods == &Vs_stdframe_vtable.base)
 	{
-		return (StandardFrame)frame;
+		return (Vs_StandardFrame)frame;
 	}
 	else
 	{

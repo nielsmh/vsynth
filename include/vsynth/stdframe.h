@@ -18,7 +18,7 @@ extern "C" {
 
 
 /// Pixel formats supported by the stdframe type
-enum StdframePixelFormat {
+enum Vs_StdframePixelFormat {
 	// one channel, uint8_t pixels, gamma corrected, stored in plane 0, other planes unused
 	STDPIXFMT_MONO8,
 	// one channel, uint16_t pixels, linear gamma, stored in plane 0, other planes unused
@@ -77,21 +77,21 @@ enum StdframePixelFormat {
 
 
 /// Type of stdframe objects
-typedef struct StandardFrame *StandardFrame;
+typedef struct Vs_StandardFrame *Vs_StandardFrame;
 
 /// Vtable for stdframe objects
-struct StandardFrameVirtual {
-	struct FrameVirtual base;
+struct Vs_StandardFrameVirtual {
+	struct Vs_FrameVirtual base;
 
 	/// Crop the frame without reallocating or blitting
-	VSYNTH_DECLARE_METHOD(void, crop)(StandardFrame frame, size_t left, size_t top, size_t width, size_t height);
+	VSYNTH_DECLARE_METHOD(void, crop)(Vs_StandardFrame frame, size_t left, size_t top, size_t width, size_t height);
 };
 
 /// Standard frame type useful for most common video processing
 ///
 /// The StandardFrame type describes common mono, RGB and YCrCb formats.
-struct StandardFrame {
-	struct Frame base;
+struct Vs_StandardFrame {
+	struct Vs_Frame base;
 
 	/// Width of frame in pixels
 	size_t width;
@@ -104,7 +104,7 @@ struct StandardFrame {
 	void *data[4];
 
 	/// Pixel format of the frame
-	enum StdframePixelFormat pixfmt;
+	enum Vs_StdframePixelFormat pixfmt;
 
 	/// Internal: Pointer to raw memory allocation for the frame
 	void *data_baseptr;
@@ -116,12 +116,12 @@ struct StandardFrame {
 ///
 /// Every Frame that is a StandardFrame has its methods member pointing to
 /// this vtable.
-VSYNTH_EXTERN(struct StandardFrameVirtual) stdframe_vtable;
+VSYNTH_EXTERN(struct Vs_StandardFrameVirtual) Vs_stdframe_vtable;
 
 /// Description of a supported stdframe format for use in filter activation
-struct StandardFrameTypeDescription {
+struct Vs_StandardFrameTypeDescription {
 	/// Base frame type description, must be initialised with a pointer to stdframe_vtable
-	struct FrameTypeDescription base;
+	struct Vs_FrameTypeDescription base;
 	/// Flag whether mid-stream resolution changes may occur
 	///
 	/// If this is set to non-zero on input, the activated filter should set
@@ -167,14 +167,14 @@ struct StandardFrameTypeDescription {
 	/// May be NULL if all pixfmts are supported.
 	///
 	/// Array must be terminated by a STDPIXFMT_MAX value.
-	enum StdframePixelFormat *pixfmts;
+	enum Vs_StdframePixelFormat *pixfmts;
 };
 
 
 /// Allocate a new stdframe with given properties
-VSYNTH_API(StandardFrame) Stdframe_New(enum StdframePixelFormat pixfmt, size_t width, size_t height);
+VSYNTH_API(Vs_StandardFrame) Vs_Stdframe_New(enum Vs_StdframePixelFormat pixfmt, size_t width, size_t height);
 /// Check if a Frame is a stdframe, and return a StandardFrame pointer if it is
-VSYNTH_API(StandardFrame) Stdframe_Get(Frame frame);
+VSYNTH_API(Vs_StandardFrame) Vs_Stdframe_Get(Vs_Frame frame);
 
 
 #ifdef __cplusplus
