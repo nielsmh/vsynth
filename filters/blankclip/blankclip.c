@@ -5,17 +5,17 @@
 
 
 struct BlankclipFilter {
-	struct Filter base;
+	struct Vs_Filter base;
 	size_t refcount;
 	size_t width, height;
 	uint32_t color;
-	Timestamp frame_duration;
-	FrameNumber length;
+	Vs_Timestamp frame_duration;
+	Vs_FrameNumber length;
 };
 
-extern struct FilterVirtual blankclip_vtable;
+extern struct Vs_FilterVirtual blankclip_vtable;
 
-static __inline struct BlankclipFilter * GetBlankclip(Filter filter)
+static __inline struct BlankclipFilter * GetBlankclip(Vs_Filter filter)
 {
 	if (filter->methods == &blankclip_vtable)
 		return (struct BlankclipFilter *)filter;
@@ -25,7 +25,7 @@ static __inline struct BlankclipFilter * GetBlankclip(Filter filter)
 
 
 
-VSYNTH_IMPLEMENT_METHOD(Filter, blankclip_new)(void)
+VSYNTH_IMPLEMENT_METHOD(Vs_Filter, blankclip_new)(void)
 {
 	struct BlankclipFilter *f = (struct BlankclipFilter *)malloc(sizeof(struct BlankclipFilter));
 	f->base.methods = &blankclip_vtable;
@@ -38,7 +38,7 @@ VSYNTH_IMPLEMENT_METHOD(Filter, blankclip_new)(void)
 	return &f->base;
 }
 
-struct FilterFactory blankclip_factory = {
+struct Vs_FilterFactory blankclip_factory = {
 	"blankclip",
 	"Blank frame source",
 	"Public domain",
@@ -46,13 +46,13 @@ struct FilterFactory blankclip_factory = {
 };
 
 
-VSYNTH_IMPLEMENT_METHOD(void, blankclip_addref)(Filter filter)
+VSYNTH_IMPLEMENT_METHOD(void, blankclip_addref)(Vs_Filter filter)
 {
 	struct BlankclipFilter *bf = GetBlankclip(filter);
 	bf->refcount++;
 }
 
-VSYNTH_IMPLEMENT_METHOD(void, blankclip_unref)(Filter filter)
+VSYNTH_IMPLEMENT_METHOD(void, blankclip_unref)(Vs_Filter filter)
 {
 	struct BlankclipFilter *bf = GetBlankclip(filter);
 	assert(bf->refcount > 0);
@@ -64,7 +64,7 @@ VSYNTH_IMPLEMENT_METHOD(void, blankclip_unref)(Filter filter)
 	}
 }
 
-VSYNTH_IMPLEMENT_METHOD(Filter, blankclip_clone)(Filter filter)
+VSYNTH_IMPLEMENT_METHOD(Vs_Filter, blankclip_clone)(Vs_Filter filter)
 {
 	struct BlankclipFilter *bf = GetBlankclip(filter);
 	struct BlankclipFilter *nf = GetBlankclip(blankclip_new());
@@ -76,15 +76,15 @@ VSYNTH_IMPLEMENT_METHOD(Filter, blankclip_clone)(Filter filter)
 	return &nf->base;
 }
 
-static ActiveFilter FailActivate(String *error, const char *msg)
+static Vs_ActiveFilter FailActivate(Vs_String *error, const char *msg)
 {
-	*error = MakeString(msg);
+	*error = Vs_MakeString(msg);
 	return NULL;
 }
-VSYNTH_IMPLEMENT_METHOD(ActiveFilter, blankclip_activate)(Filter filter, String *error, struct FrameTypeDescription **frametypes)
+VSYNTH_IMPLEMENT_METHOD(Vs_ActiveFilter, blankclip_activate)(Vs_Filter filter, Vs_String *error, struct Vs_FrameTypeDescription **frametypes)
 {
-	struct StandardFrameTypeDescription *sfd;
-	enum StdframePixelFormat *pf;
+	struct Vs_StandardFrameTypeDescription *sfd;
+	enum Vs_StdframePixelFormat *pf;
 
 	int allow_xrgb8 = 0, allow_argb8 = 0, allow_xrgb16 = 0, allow_argb16 = 0;
 
@@ -96,9 +96,9 @@ VSYNTH_IMPLEMENT_METHOD(ActiveFilter, blankclip_activate)(Filter filter, String 
 
 	for (; *frametypes; frametypes++)
 	{
-		if ((*frametypes)->frame_type == (struct FrameVirtual *)&stdframe_vtable)
+		if ((*frametypes)->frame_type == (struct FrameVirtual *)&Vs_stdframe_vtable)
 		{
-			sfd = (struct StandardFrameTypeDescription *)*frametypes;
+			sfd = (struct Vs_StandardFrameTypeDescription *)*frametypes;
 			sfd->base.out_supported = 1;
 			if (sfd->minwidth > f->width  || sfd->maxwidth < f->width || sfd->minheight > f->height || sfd->maxheight < f->height)
 			{
@@ -165,7 +165,7 @@ VSYNTH_IMPLEMENT_METHOD(ActiveFilter, blankclip_activate)(Filter filter, String 
 	return NULL;
 }
 
-VSYNTH_IMPLEMENT_METHOD(void, blankclip_enum_properties)(EnumPropertiesFunc callback, void *userdata)
+VSYNTH_IMPLEMENT_METHOD(void, blankclip_enum_properties)(Vs_EnumPropertiesFunc callback, void *userdata)
 {
 	callback("width", PROP_INT, userdata);
 	callback("height", PROP_INT, userdata);
@@ -174,12 +174,12 @@ VSYNTH_IMPLEMENT_METHOD(void, blankclip_enum_properties)(EnumPropertiesFunc call
 	callback("length", PROP_FRAMENUMBER, userdata);
 }
 
-VSYNTH_IMPLEMENT_METHOD(Filter, blankclip_get_property_filter)(Filter filter, const char *name)
+VSYNTH_IMPLEMENT_METHOD(Vs_Filter, blankclip_get_property_filter)(Vs_Filter filter, const char *name)
 {
 	return NULL; // no filter properties
 }
 
-VSYNTH_IMPLEMENT_METHOD(long long, blankclip_get_property_int)(Filter filter, const char *name)
+VSYNTH_IMPLEMENT_METHOD(long long, blankclip_get_property_int)(Vs_Filter filter, const char *name)
 {
 	struct BlankclipFilter *f = GetBlankclip(filter);
 	if (strcmp(name, "width") == 0)
@@ -191,17 +191,17 @@ VSYNTH_IMPLEMENT_METHOD(long long, blankclip_get_property_int)(Filter filter, co
 	return 0;
 }
 
-VSYNTH_IMPLEMENT_METHOD(double, blankclip_get_property_double)(Filter filter, const char *name)
+VSYNTH_IMPLEMENT_METHOD(double, blankclip_get_property_double)(Vs_Filter filter, const char *name)
 {
 	return 0; // no double properties
 }
 
-VSYNTH_IMPLEMENT_METHOD(String, blankclip_get_property_string)(Filter filter, const char *name)
+VSYNTH_IMPLEMENT_METHOD(Vs_String, blankclip_get_property_string)(Vs_Filter filter, const char *name)
 {
 	return NULL; // no string properties
 }
 
-VSYNTH_IMPLEMENT_METHOD(FrameNumber, blankclip_get_property_framenumber)(Filter filter, const char *name)
+VSYNTH_IMPLEMENT_METHOD(Vs_FrameNumber, blankclip_get_property_framenumber)(Vs_Filter filter, const char *name)
 {
 	struct BlankclipFilter *f = GetBlankclip(filter);
 	if (strcmp(name, "length") == 0)
@@ -209,7 +209,7 @@ VSYNTH_IMPLEMENT_METHOD(FrameNumber, blankclip_get_property_framenumber)(Filter 
 	return 0;
 }
 
-VSYNTH_IMPLEMENT_METHOD(Timestamp, blankclip_get_property_timestamp)(Filter filter, const char *name)
+VSYNTH_IMPLEMENT_METHOD(Vs_Timestamp, blankclip_get_property_timestamp)(Vs_Filter filter, const char *name)
 {
 	struct BlankclipFilter *f = GetBlankclip(filter);
 	if (strcmp(name, "framedur") == 0)
@@ -217,12 +217,12 @@ VSYNTH_IMPLEMENT_METHOD(Timestamp, blankclip_get_property_timestamp)(Filter filt
 	return 0;
 }
 
-VSYNTH_IMPLEMENT_METHOD(void, blankclip_set_property_filter)(Filter filter, const char *name, Filter value)
+VSYNTH_IMPLEMENT_METHOD(void, blankclip_set_property_filter)(Vs_Filter filter, const char *name, Vs_Filter value)
 {
 	// no filter properties
 }
 
-VSYNTH_IMPLEMENT_METHOD(void, blankclip_set_property_int)(Filter filter, const char *name, long long value)
+VSYNTH_IMPLEMENT_METHOD(void, blankclip_set_property_int)(Vs_Filter filter, const char *name, long long value)
 {
 	struct BlankclipFilter *f = GetBlankclip(filter);
 	if (strcmp(name, "width") == 0)
@@ -233,24 +233,24 @@ VSYNTH_IMPLEMENT_METHOD(void, blankclip_set_property_int)(Filter filter, const c
 		f->color = (uint32_t)value;
 }
 
-VSYNTH_IMPLEMENT_METHOD(void, blankclip_set_property_double)(Filter filter, const char *name, double value)
+VSYNTH_IMPLEMENT_METHOD(void, blankclip_set_property_double)(Vs_Filter filter, const char *name, double value)
 {
 	// no double properties
 }
 
-VSYNTH_IMPLEMENT_METHOD(void, blankclip_set_property_string)(Filter filter, const char *name, String value)
+VSYNTH_IMPLEMENT_METHOD(void, blankclip_set_property_string)(Vs_Filter filter, const char *name, Vs_String value)
 {
 	// no string properties
 }
 
-VSYNTH_IMPLEMENT_METHOD(void, blankclip_set_property_framenumber)(Filter filter, const char *name, FrameNumber value)
+VSYNTH_IMPLEMENT_METHOD(void, blankclip_set_property_framenumber)(Vs_Filter filter, const char *name, Vs_FrameNumber value)
 {
 	struct BlankclipFilter *f = GetBlankclip(filter);
 	if (strcmp(name, "length") == 0)
 		f->length = value;
 }
 
-VSYNTH_IMPLEMENT_METHOD(void, blankclip_set_property_timestamp)(Filter filter, const char *name, Timestamp value)
+VSYNTH_IMPLEMENT_METHOD(void, blankclip_set_property_timestamp)(Vs_Filter filter, const char *name, Vs_Timestamp value)
 {
 	struct BlankclipFilter *f = GetBlankclip(filter);
 	if (strcmp(name, "framedur") == 0)
@@ -258,7 +258,7 @@ VSYNTH_IMPLEMENT_METHOD(void, blankclip_set_property_timestamp)(Filter filter, c
 }
 
 
-struct FilterVirtual blankclip_vtable = {
+struct Vs_FilterVirtual blankclip_vtable = {
 	blankclip_addref,
 	blankclip_unref,
 	blankclip_clone,
@@ -287,7 +287,7 @@ BOOL WINAPI DllMain(__in  HINSTANCE hinstDLL, __in  DWORD fdwReason, __in  LPVOI
 {
 	if (fdwReason == DLL_PROCESS_ATTACH)
 	{
-		RegisterFilter(&blankclip_factory);
+		Vs_RegisterFilter(&blankclip_factory);
 	}
 	else if (fdwReason == DLL_PROCESS_DETACH)
 	{
