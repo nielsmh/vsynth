@@ -1,12 +1,17 @@
-#define VSYNTH_API(rettype) __declspec(dllexport) rettype __stdcall
-
 #include <vsynth/stdframe.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 
 
-static __inline size_t STDPIXFMT_pixelsize(enum StdframePixelFormat pixfmt)
+#ifdef _MSC_VER
+# define INLINE __inline
+#else
+# define INLINE
+#endif
+
+
+static INLINE size_t STDPIXFMT_pixelsize(enum StdframePixelFormat pixfmt)
 {
 	switch (pixfmt)
 	{
@@ -37,7 +42,7 @@ static __inline size_t STDPIXFMT_pixelsize(enum StdframePixelFormat pixfmt)
 	}
 }
 
-static __inline size_t STDPIXFMT_planecount(enum StdframePixelFormat pixfmt)
+static INLINE size_t STDPIXFMT_planecount(enum StdframePixelFormat pixfmt)
 {
 	switch (pixfmt)
 	{
@@ -67,7 +72,7 @@ static __inline size_t STDPIXFMT_planecount(enum StdframePixelFormat pixfmt)
 	}
 }
 
-static __inline size_t STDPIXFMT_planewidthscale(enum StdframePixelFormat pixfmt, size_t plane)
+static INLINE size_t STDPIXFMT_planewidthscale(enum StdframePixelFormat pixfmt, size_t plane)
 {
 	switch (pixfmt)
 	{
@@ -99,7 +104,7 @@ static __inline size_t STDPIXFMT_planewidthscale(enum StdframePixelFormat pixfmt
 	}
 }
 
-static __inline size_t STDPIXFMT_planeheightscale(enum StdframePixelFormat pixfmt, size_t plane)
+static INLINE size_t STDPIXFMT_planeheightscale(enum StdframePixelFormat pixfmt, size_t plane)
 {
 	switch (pixfmt)
 	{
@@ -132,7 +137,7 @@ static __inline size_t STDPIXFMT_planeheightscale(enum StdframePixelFormat pixfm
 }
 
 
-static void VSYNTH_METHOD Stdframe_destroy(Frame frame)
+VSYNTH_IMPLEMENT_METHOD(void, Stdframe_destroy)(Frame frame)
 {
 	StandardFrame sf = Stdframe_Get(frame);
 	assert(sf != NULL);
@@ -141,7 +146,7 @@ static void VSYNTH_METHOD Stdframe_destroy(Frame frame)
 	free(sf);
 }
 
-static Frame VSYNTH_METHOD Stdframe_clone(Frame frame)
+VSYNTH_IMPLEMENT_METHOD(Frame, Stdframe_clone)(Frame frame)
 {
 	StandardFrame sf = Stdframe_Get(frame);
 	StandardFrame result = NULL;
@@ -158,7 +163,7 @@ static Frame VSYNTH_METHOD Stdframe_clone(Frame frame)
 	return (Frame)result;
 }
 
-static void VSYNTH_METHOD Stdframe_crop(StandardFrame frame, size_t left, size_t top, size_t width, size_t height)
+VSYNTH_IMPLEMENT_METHOD(void, Stdframe_crop)(StandardFrame frame, size_t left, size_t top, size_t width, size_t height)
 {
 	size_t pixelsize = STDPIXFMT_pixelsize(frame->pixfmt);
 	size_t planes = STDPIXFMT_planecount(frame->pixfmt);
@@ -310,7 +315,7 @@ VSYNTH_API(StandardFrame) Stdframe_New(enum StdframePixelFormat pixfmt, size_t w
 	return frame;
 }
 
-__inline VSYNTH_API(StandardFrame) Stdframe_Get(Frame frame)
+INLINE VSYNTH_API(StandardFrame) Stdframe_Get(Frame frame)
 {
 	if (frame->methods == &stdframe_vtable.base)
 	{

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vsynth/vsynth.h>
 
 /*
@@ -10,7 +12,9 @@ define a new frame format if a stdframe format is inadequate.
 
 */
 
-HEADER_START
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 /// Pixel formats supported by the stdframe type
@@ -80,7 +84,7 @@ struct StandardFrameVirtual {
 	struct FrameVirtual base;
 
 	/// Crop the frame without reallocating or blitting
-	void (VSYNTH_METHOD *crop)(StandardFrame frame, size_t left, size_t top, size_t width, size_t height);
+	VSYNTH_DECLARE_METHOD(void, crop)(StandardFrame frame, size_t left, size_t top, size_t width, size_t height);
 };
 
 /// Standard frame type useful for most common video processing
@@ -112,7 +116,7 @@ struct StandardFrame {
 ///
 /// Every Frame that is a StandardFrame has its methods member pointing to
 /// this vtable.
-extern struct StandardFrameVirtual stdframe_vtable;
+VSYNTH_EXTERN(struct StandardFrameVirtual) stdframe_vtable;
 
 /// Description of a supported stdframe format for use in filter activation
 struct StandardFrameTypeDescription {
@@ -173,4 +177,6 @@ VSYNTH_API(StandardFrame) Stdframe_New(enum StdframePixelFormat pixfmt, size_t w
 VSYNTH_API(StandardFrame) Stdframe_Get(Frame frame);
 
 
-HEADER_END
+#ifdef __cplusplus
+}
+#endif

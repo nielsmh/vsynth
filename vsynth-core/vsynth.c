@@ -1,11 +1,16 @@
-#define VSYNTH_API(rettype) __declspec(dllexport) rettype __stdcall
-
 #include <stdlib.h>
 #include <string.h>
 #include <vsynth/vsynth.h>
 
 
-__inline VSYNTH_API(String) AllocString(size_t len)
+#ifdef _MSC_VER
+# define INLINE __inline
+#else
+# define INLINE
+#endif
+
+
+extern INLINE VSYNTH_API(String) AllocString(size_t len)
 {
 	String result = (String)malloc(sizeof(struct String));
 	result->len = len;
@@ -20,12 +25,12 @@ __inline VSYNTH_API(String) AllocString(size_t len)
 	return result;
 }
 
-__inline VSYNTH_API(String) MakeString(const char *str)
+extern INLINE VSYNTH_API(String) MakeString(const char *str)
 {
 	return MakeStringN(str, strlen(str));
 }
 
-__inline VSYNTH_API(String) MakeStringN(const char *str, size_t len)
+extern INLINE VSYNTH_API(String) MakeStringN(const char *str, size_t len)
 {
 	String result = AllocString(len);
 	if (len > 0)
@@ -35,12 +40,12 @@ __inline VSYNTH_API(String) MakeStringN(const char *str, size_t len)
 	return result;
 }
 
-__inline VSYNTH_API(String) CopyString(const String str)
+extern INLINE VSYNTH_API(String) CopyString(const String str)
 {
 	return MakeStringN(str->str, str->len);
 }
 
-__inline VSYNTH_API(void) FreeString(String str)
+extern INLINE VSYNTH_API(void) FreeString(String str)
 {
 	free(str->str);
 	free(str);
