@@ -170,6 +170,15 @@ VSYNTH_API(Vs_StandardFrame) Vs_Stdframe_New(enum Vs_StdframePixelFormat pixfmt,
 /// Check if a Frame is a stdframe, and return a StandardFrame pointer if it is
 VSYNTH_API(Vs_StandardFrame) Vs_Stdframe_Get(Vs_Frame frame);
 
+/// Initialise a Vs_StandardFrameTypeDescription struct
+///
+/// Sets the 4CID to the stdframe tag and clears out the remaining fields.
+VSYNTH_API(void) Vs_Stdframe_InitFTD(struct Vs_StandardFrameTypeDescription *ftd);
+/// Check if a FrameTypeDescription is for a standard frame
+///
+/// Returns NULL if the FTD is not for a stdframe, or a pointer to a Vs_StandardFrameTypeDescription struct if it is.
+VSYNTH_API(struct Vs_StandardFrameTypeDescription *) Vs_Stdframe_CheckFTD(Vs_FrameTypeDescription *ftd);
+
 
 #ifdef __cplusplus
 }

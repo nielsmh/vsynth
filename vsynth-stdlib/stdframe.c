@@ -326,3 +326,33 @@ INLINE VSYNTH_API(Vs_StandardFrame) Vs_Stdframe_Get(Vs_Frame frame)
 		return NULL;
 	}
 }
+
+
+#define STDFRAME_4CID "StdF"
+
+VSYNTH_API(void) Vs_Stdframe_InitFTD(struct Vs_StandardFrameTypeDescription *ftd)
+{
+	Vs_Set4CID(ftd->base.frame_type, STDFRAME_4CID);
+	ftd->base.out_supported = 0;
+
+	ftd->allow_pixfmt_change = 0;
+	ftd->allow_resolution_change = 0;
+	ftd->pixfmts = NULL;
+
+	ftd->width_modulo = 0;
+	ftd->minwidth = 0;
+	ftd->maxwidth = SIZE_MAX;
+
+	ftd->height_modulo = 0;
+	ftd->minheight = 0;
+	ftd->maxheight = SIZE_MAX;
+}
+
+VSYNTH_API(struct Vs_StandardFrameTypeDescription *) Vs_Stdframe_CheckFTD(Vs_FrameTypeDescription *ftd)
+{
+	if (Vs_Check4CID(ftd->frame_type, STDFRAME_4CID))
+	{
+		return (struct Vs_StandardFrameTypeDescription *)ftd;
+	}
+}
+
