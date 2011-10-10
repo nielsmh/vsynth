@@ -156,7 +156,7 @@ VSYNTH_IMPLEMENT_METHOD(Vs_Frame, Stdframe_clone)(Vs_Frame frame)
 	result = Vs_Stdframe_New(sf->pixfmt, sf->width, sf->height);
 	if (result == NULL)
 		return NULL;
-	// fixme? check whether new frame has sama datasize as old?
+	// fixme? check whether new frame has sama datasize as old? really should do scanline-by-scanline copy
 
 	memcpy(result->data_baseptr, sf->data_baseptr, sf->data_rawsize);
 	
