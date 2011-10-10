@@ -58,6 +58,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>vsynth.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
+      <ImportLibrary>$(OutDir)vsynth-dll.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -77,6 +78,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>vsynth.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
+      <ImportLibrary>$(OutDir)vsynth-dll.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
