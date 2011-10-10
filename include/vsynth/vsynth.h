@@ -206,7 +206,7 @@ typedef struct TAG_Vs_FilterVirtual {
 	/// outputting that frame type. If it cannot support any of the frame
 	/// types it must fail. An active filter should only deliver frame types
 	/// it promised during activation.
-	VSYNTH_DECLARE_METHOD(Vs_ActiveFilter, activate)(Vs_Filter filter, Vs_String *error, struct Vs_FrameTypeDescription **frametypes);
+	VSYNTH_DECLARE_METHOD(Vs_ActiveFilter, activate)(Vs_Filter filter, Vs_String *error, Vs_FrameTypeDescription **frametypes);
 
 	/// Enumerate all properties the filter has through the callback function
 	VSYNTH_DECLARE_METHOD(void, enum_properties)(Vs_EnumPropertiesFunc callback, void *userdata);
