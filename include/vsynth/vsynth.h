@@ -52,6 +52,9 @@ typedef struct {
 	char id[4];
 } Vs_FourCharId;
 
+#define Vs_Set4CID(var,id) memcpy(&(var), id, sizeof(Vs_FourCharId))
+#define Vs_Check4CID(var,id) (memcmp(&(var), id, sizeof(Vs_FourCharId))==0)
+
 
 /// Vtable for Frame objects
 typedef struct TAG_Vs_FrameVirtual {
