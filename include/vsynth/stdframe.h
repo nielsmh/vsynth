@@ -81,7 +81,7 @@ typedef struct Vs_StandardFrame *Vs_StandardFrame;
 
 /// Vtable for stdframe objects
 struct Vs_StandardFrameVirtual {
-	struct Vs_FrameVirtual base;
+	struct TAG_Vs_FrameVirtual base;
 
 	/// Crop the frame without reallocating or blitting
 	VSYNTH_DECLARE_METHOD(void, crop)(Vs_StandardFrame frame, size_t left, size_t top, size_t width, size_t height);
@@ -91,7 +91,7 @@ struct Vs_StandardFrameVirtual {
 ///
 /// The StandardFrame type describes common mono, RGB and YCrCb formats.
 struct Vs_StandardFrame {
-	struct Vs_Frame base;
+	struct TAG_Vs_Frame base;
 
 	/// Width of frame in pixels
 	size_t width;
@@ -112,16 +112,10 @@ struct Vs_StandardFrame {
 	size_t data_rawsize;
 };
 
-/// The global vtable for StandardFrame objects
-///
-/// Every Frame that is a StandardFrame has its methods member pointing to
-/// this vtable.
-VSYNTH_EXTERN(struct Vs_StandardFrameVirtual) Vs_stdframe_vtable;
-
 /// Description of a supported stdframe format for use in filter activation
 struct Vs_StandardFrameTypeDescription {
 	/// Base frame type description, must be initialised with a pointer to stdframe_vtable
-	struct Vs_FrameTypeDescription base;
+	struct TAG_Vs_FrameTypeDescription base;
 	/// Flag whether mid-stream resolution changes may occur
 	///
 	/// If this is set to non-zero on input, the activated filter should set

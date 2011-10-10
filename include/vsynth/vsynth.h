@@ -15,7 +15,7 @@
 # define VSYNTH_IMPLEMENT_METHOD(rettype, name) static rettype __stdcall name
 #else
 # error Please define VSYNTH_API, VSYNTH_EXTERN, VSYNTH_DECLARE_METHOD and VSYNTH_IMPLEMENT_METHOD for your compiler
-// Make sure definitions for new compilers are ABI compatible with existing compilers' definitions
+// Make sure definitions for new compilers are ABI compatible with existing compilers' definitions on the platform
 #endif
 
 
@@ -38,15 +38,23 @@ typedef unsigned long long int Vs_Timestamp;
 #define DURATION_UNKNOWN ((Vs_FrameNumber)-1)
 
 /// Type of Vsynth video frames
-typedef struct Vs_Frame *Vs_Frame;
+typedef struct TAG_Vs_Frame *Vs_Frame;
 /// Type of an active Vsynth filter
-typedef struct Vs_ActiveFilter *Vs_ActiveFilter;
+typedef struct TAG_Vs_ActiveFilter *Vs_ActiveFilter;
 /// Type of a Vsynth filter
-typedef struct Vs_Filter *Vs_Filter;
+typedef struct TAG_Vs_Filter *Vs_Filter;
+/// A Vsynth core library instance
+typedef struct TAG_Vs_Library *Vs_Library;
+
+
+/// Four-character ID for classifying various objects
+typedef struct {
+	char id[4];
+} Vs_FourCharId;
 
 
 /// Vtable for Frame objects
-struct Vs_FrameVirtual {
+typedef struct TAG_Vs_FrameVirtual {
 	/// Deinitialise and deallocate a frame
 	///
 	/// This should possibly be changed to reference counting.
@@ -54,61 +62,62 @@ struct Vs_FrameVirtual {
 	/// Create a complete copy of the frame that can be safely written to
 	/// without affecting the original
 	VSYNTH_DECLARE_METHOD(Vs_Frame, clone)(Vs_Frame frame);
-};
+} *Vs_FrameVirtual;
 /// Represents a video frame
 ///
 /// @todo This needs some more fields or methods to actually hold pixel data
-struct Vs_Frame {
+typedef struct TAG_Vs_Frame {
 	/// Points to the vtable for this frame object
-	struct Vs_FrameVirtual *methods;
+	Vs_FrameVirtual methods;
 	/// Timestamp the frame would appear at during playback
 	///
 	/// A frame's timestamp is the first moment in time the frame is to be
 	/// displayed.
 	Vs_Timestamp timestamp;
-};
+} *Vs_Frame;
 
 /// Structure for describing supported frame types during filter activation
 ///
 /// Frame types may extend this structure with other relevant fields to describe
 /// further constraints.
-struct Vs_FrameTypeDescription {
-	/// Pointer to the vtable of the frame type, to distinguish the frame type
-	struct FrameVirtual *frame_type;
+typedef struct TAG_Vs_FrameTypeDescription {
+	/// 4CID for the frame type
+	Vs_FourCharId frame_type;
 	/// Set by the callee during filter activation, telling whether it supports the format
 	///
 	/// The filter being activated sets this to zero if it does not supporte the format
 	/// or to non-zero if it does support the format.
 	int out_supported;
-};
+} Vs_FrameTypeDescription;
 
 
 /// A character string or blob with memory managed by Vsynth
-struct Vs_String {
+typedef struct TAG_Vs_String {
 	/// Length of string in bytes
 	size_t len;
 	/// Pointer to string character data
 	///
 	/// If len==0 then this pointer is NULL.
 	char *str;
-};
-/// Type of Vsynth-managed strings
-typedef struct Vs_String *Vs_String;
+} *Vs_String;
 
-/// Create a new String with undefined contents
-VSYNTH_API(Vs_String) Vs_AllocString(size_t len);
-/// Create a new String from a nul-terminated string
-VSYNTH_API(Vs_String) Vs_MakeString(const char *str);
-/// Create a new String from a string with known length
-VSYNTH_API(Vs_String) Vs_MakeStringN(const char *str, size_t len);
-/// Create a new copy of a String
-VSYNTH_API(Vs_String) Vs_CopyString(const Vs_String str);
-/// Deallocate the memory used by a String
-VSYNTH_API(void) Vs_FreeString(Vs_String str);
+/// Functions for handling strings
+typedef struct TAG_Vs_StringAPI {
+	/// Allocale a new Vs_String of given length, with undefined contents
+	VSYNTH_DECLARE_METHOD(Vs_String, Alloc)(size_t len);
+	/// Allocate a new Vs_String and initialise it from the given C string
+	VSYNTH_DECLARE_METHOD(Vs_String, Make)(const char *str);
+	/// Allocate a new Vs_String and initialise it from the given C string with known length
+	VSYNTH_DECLARE_METHOD(Vs_String, MakeN)(const char *str, size_t len);
+	/// Duplicate an existing Vs_String
+	VSYNTH_DECLARE_METHOD(Vs_String, Copy)(const Vs_String str);
+	/// Deallocate a Vs_String
+	VSYNTH_DECLARE_METHOD(void, Free)(Vs_String str);
+} *Vs_StringAPI;
 
 
 /// Vtable for ActiveFilter
-struct Vs_ActiveFilterVirtual {
+typedef struct TAG_Vs_ActiveFilterVirtual {
 	/// De-initialise and deallocate a filter
 	VSYNTH_DECLARE_METHOD(void, destroy)(Vs_ActiveFilter filter);
 	/// Return or produce a numbered frame
@@ -142,16 +151,16 @@ struct Vs_ActiveFilterVirtual {
 	/// DURATION_UNKNOWN constant, in which case the duration of the
 	/// video stream is not known.
 	VSYNTH_DECLARE_METHOD(Vs_Timestamp, get_duration)(Vs_ActiveFilter filter);
-};
+} *Vs_ActiveFilterVirtual;
 /// An activated filter from which frames can be requested
-struct Vs_ActiveFilter {
+typedef struct TAG_Vs_ActiveFilter {
 	/// Points to the vtable for the ActiveFilter object
-	struct Vs_ActiveFilterVirtual *methods;
+	Vs_ActiveFilterVirtual methods;
 	/// Points to the Filter object that produced this active instance
 	///
 	/// Should be treated const.
 	Vs_Filter filter;
-};
+} *Vs_ActiveFilter;
 
 
 /// Types a property value can take
@@ -168,7 +177,7 @@ enum Vs_PropertyType {
 /// Type of callback function for enumerating all properties on a filter
 typedef VSYNTH_DECLARE_METHOD(void, Vs_EnumPropertiesFunc)(const char *name, enum Vs_PropertyType type, void *userdata);
 /// Vtable for Filter objects
-struct Vs_FilterVirtual {
+typedef struct TAG_Vs_FilterVirtual {
 	/// Increase the reference count to the Filter object
 	VSYNTH_DECLARE_METHOD(void, addref)(Vs_Filter filter);
 	/// Decrease the reference count to the Filter object
@@ -275,20 +284,20 @@ struct Vs_FilterVirtual {
 	/// The call may be ignored if the property doesn't exist or is not of
 	/// Timestamp type.
 	VSYNTH_DECLARE_METHOD(void, set_property_timestamp)(Vs_Filter filter, const char *name, Vs_Timestamp value);
-};
+} *Vs_FilterVirtual;
 /// A prototype filter which can be configured and activate instances
 ///
 /// A filter prototype must not own active filters and must not request frames.
 /// When a filter is activated, it should activate all other filters it
 /// references and pass those activated filters to the instance it creates.
-struct Vs_Filter {
+typedef struct TAG_Vs_Filter {
 	/// Point to the vtable for the Filter object
-	struct Vs_FilterVirtual *methods;
-};
+	Vs_FilterVirtual methods;
+} *Vs_Filter;
 
 
 /// A factory for Filter objects of a specific type
-struct Vs_FilterFactory {
+typedef struct TAG_Vs_FilterFactory {
 	/// Programmatic identifier for the filter
 	///
 	/// The identifier should only consist of characters commonly usable for
@@ -301,22 +310,41 @@ struct Vs_FilterFactory {
 	/// Produce a new instance of the filter
 	///
 	/// The returned Filter object must have a reference count of 1.
-	VSYNTH_DECLARE_METHOD(Vs_Filter, produce)(void);
-};
+	VSYNTH_DECLARE_METHOD(Vs_Filter, produce)(Vs_Library vsynth);
+} Vs_FilterFactory;
+
 
 /// Type of callback functions for enumerating registered filters
-typedef VSYNTH_DECLARE_METHOD(void, Vs_EnumFiltersFunc)(struct Vs_FilterFactory *factory, void *userdata);
+typedef VSYNTH_DECLARE_METHOD(void, Vs_EnumFiltersFunc)(Vs_FilterFactory *factory, void *userdata);
 
-/// Register a new filter type with Vsynth
-VSYNTH_API(void) Vs_RegisterFilter(struct Vs_FilterFactory *factory);
-/// Get the factory for a named filter
+/// Filter registry interface, registering and looking up filters
+typedef struct TAG_Vs_FilterRegistry {
+	/// Register a new filter with the factory
+	VSYNTH_DECLARE_METHOD(void, Register)(Vs_Library vsynth, Vs_FilterFactory *factory);
+	/// Look up a filter by identifier
+	VSYNTH_DECLARE_METHOD(Vs_FilterFactory *, Find)(Vs_Library vsynth, const char *identifier);
+	/// Enumerate all filters through a callback function
+	VSYNTH_DECLARE_METHOD(void, Enumerate)(Vs_Library vsynth, Vs_EnumFiltersFunc callback, void *userdata);
+} *Vs_FilterRegistry;
+
+
+/// Vsynth library instance
+typedef struct TAG_Vs_Library {
+	/// Pointer to filter registry functions
+	Vs_FilterRegistry FilterRegistry;
+	/// Pointer to string functions
+	Vs_StringAPI String;
+} *Vs_Library;
+
+
+/// Create a new Vsynth library instance
+VSYNTH_API(Vs_Library) Vs_InitLibrary(void);
+/// Free a Vsynth library instance
 ///
-/// @param name Programmatic identifier for the filter requested
-VSYNTH_API(struct Vs_FilterFactory *) Vs_FindFilter(const char *name);
-/// Enumerate all currently registered filters
-VSYNTH_API(void) Vs_EnumerateFilters(Vs_EnumFiltersFunc callback, void *userdata);
+/// All objects created from the library instance should be destroyed before attempting to free the library.
+VSYNTH_API(void) Vs_FreeLibrary(Vs_Library vsynth);
 
 
 #ifdef __cplusplus
-}
+};
 #endif

@@ -2,16 +2,9 @@ LIBRARY vsynth.dll
 
 EXPORTS
 	; --- Core library ---
-	Vs_AllocString
-	Vs_MakeString
-	Vs_MakeStringN
-	Vs_CopyString
-	Vs_FreeString
-	Vs_RegisterFilter
-	Vs_FindFilter
-	Vs_EnumerateFilters
+	Vs_InitLibrary
+	Vs_FreeLibrary
 	; --- Standard frame type ---
 	Vs_Stdframe_New
 	Vs_Stdframe_Get
-	Vs_stdframe_vtable DATA
 
